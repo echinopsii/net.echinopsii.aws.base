@@ -1,0 +1,12 @@
+region               =  "<your aws region>"
+state_bucket         =  "<your s2 state bucket>"
+vpc_state_key        =  "<your vpc state key>"
+consul_state_key     =  "<your consul state key>"
+docker_key           =  "<your docker key>"
+
+dockerhosts          =      ["<your docker server 1 name>",...]
+dockerhost_distrib   =      "<your docker hosts distrib"
+dockerhost_type      =      ["<your docker server 1 type>",...]
+dockerhost_root_disk_size = "10"
+
+docker_overlay       = "<your docker overlay sg name>" 
