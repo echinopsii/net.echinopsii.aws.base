@@ -1,3 +1,7 @@
+# Packer    #
+#############
+myvars.json
+
 # Terraform #
 #############
 terraform.tfstate
