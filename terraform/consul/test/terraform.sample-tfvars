@@ -1,0 +1,11 @@
+state_bucket          = "<your s2 state bucket>"
+vpc_state_key         = "<your vpc state key>"
+region                = "<your aws region>"
+
+consul_key            = "<your consul key>"
+consul_ami_basename   = "<your consul ami basename"
+consul_version        = "0.6.4"
+consul_servers        = ["<your consul server 1 name>", ...]
+consul_agent          = "<your consul agent server name>"
+
+ttl                   = "300"
