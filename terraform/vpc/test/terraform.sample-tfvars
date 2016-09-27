@@ -1,0 +1,16 @@
+region                = "<your aws region>"
+
+cidr_block            = "<your cidr block>"
+subnet_bits           = "<your subnet bits>"
+subnet_prv_offset     = "<your subnet prv offset>"
+private_domain_name   = "<your domaine name>"
+reverse_dns           = "<your reverse dns>"
+
+vpc_name              = "<your vpc name>"
+vpc_short_name        = "<your vpc short name>"
+
+bastion_key           = "<your bastion key>"
+bastion_ami_basename  = ["<your bastion ami basename>", ...]
+bastion_ttl           = "300"
+
+bastions_name         = ["<your first bastion name>", ...]
