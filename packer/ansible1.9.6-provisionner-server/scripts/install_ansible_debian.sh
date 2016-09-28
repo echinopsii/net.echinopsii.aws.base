@@ -12,5 +12,5 @@ apt-get install -y ${_BDEP}
 
 pip install ansible==1.9.6
 
-mkdir /ANSIBLE
+mkdir /ANSIBLE && cd /ANSIBLE
 git clone $ANSIBLE_REPO
