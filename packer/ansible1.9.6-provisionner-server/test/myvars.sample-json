@@ -1,0 +1,16 @@
+{
+    "aws_region": "<Your AWS region>",
+    "aws_build_vpc": "<Your VPC for build>",
+    "aws_build_subnet": "<Your subnet for build>",
+    "aws_public_ip": "true",
+    "aws_instance_type": "t2.micro",
+    "aws_distribution_user": "admin",
+
+    "aws_source_ami": "ami-e079f893",
+    "aws_shared_account": "",
+
+    "distribution": "debian",
+    "ssh_pty": "true",
+
+    "role": "ansible"
+}
