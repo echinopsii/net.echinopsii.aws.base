@@ -1,17 +1,20 @@
 #!/bin/bash
 
-apt-get update
-apt-get install -y apt-transport-https ca-certificates
-apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+is_docker_installed=`dpkg -l docker-engine`
+if [ $? -ne 0 ]; then
+	apt-get update
+	apt-get install -y apt-transport-https ca-certificates
+	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 
-echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/sources.list.d/docker.list
-apt-get update
-apt-get install -y docker-engine
+	echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/sources.list.d/docker.list
+	apt-get update
+	apt-get install -y docker-engine
 
-gpasswd -a admin docker
+	gpasswd -a admin docker
 
-easy_install pip
-pip install docker-compose
+	easy_install pip
+	pip install docker-compose
+fi
 
 registry=${insecure_registry}
 host=${docker_hostname}

@@ -16,7 +16,9 @@ variable "docker_key" {}
 variable "dockerhosts" {
   type = "list"
 }
-variable "dockerhost_distrib" {}
+variable "dockerhost_distrib" {
+  default = "ansible-target"
+}
 variable "dockerhost_type" {
   type = "list"
 }
@@ -84,24 +86,6 @@ resource "aws_security_group_rule" "docker_overlay_egress" {
     security_group_id = "${aws_security_group.docker_overlay.id}"
 }
 
-data "template_file" "hostname" {
-  template = "${file("${path.module}/files/hostname.sh.tpl")}"
-
-  vars {
-    TF_HOSTNAME = "{hostname}"
-  }
-}
-
-data "template_file" "setup_docker" {
-    template     = "${file("${path.module}/files/setup_docker.sh.tpl")}"
-    vars {
-        docker_hostname = "{hostname}"
-        insecure_registry = "${var.docker_registry}"
-        overlay_store = "${data.terraform_remote_state.consul.consul_address}"
-        overlay_advertise = "${var.docker_overlay_advertise}"
-    }
-}
-
 resource "aws_route53_record" "docker_servers" {
   count   = "${length(var.dockerhosts)}"
   zone_id = "${data.terraform_remote_state.vpc.private_host_zone}"
@@ -120,6 +104,25 @@ resource "aws_route53_record" "docker_servers_reverse" {
   records = ["${var.dockerhosts[count.index]}.${data.terraform_remote_state.vpc.private_domain_name}"]
 }
 
+data "template_file" "hostname" {
+  template = "${file("${path.module}/files/hostname.sh.tpl")}"
+
+  vars {
+    TF_HOSTNAME = "{hostname}"
+  }
+}
+
+data "template_file" "setup_docker" {
+    template     = "${file("${path.module}/files/setup_docker.sh.tpl")}"
+
+    vars {
+        docker_hostname = "{hostname}"
+        insecure_registry = "${var.docker_registry}"
+        overlay_store = "${data.terraform_remote_state.consul.consul_address}"
+        overlay_advertise = "${var.docker_overlay_advertise}"
+    }
+}
+
 data "aws_ami" "docker" {
   most_recent = true
   filter {
@@ -134,6 +137,7 @@ resource "aws_instance" "docker" {
     instance_type = "${var.dockerhost_type[count.index]}"
     key_name = "${var.docker_key}"
     subnet_id = "${data.terraform_remote_state.vpc.private_subnets[count.index]}"
+
     vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sshserver}", "${data.terraform_remote_state.consul.sg_consul_client}","${aws_security_group.docker_overlay.id}"]
     root_block_device {
         volume_type = "gp2"
