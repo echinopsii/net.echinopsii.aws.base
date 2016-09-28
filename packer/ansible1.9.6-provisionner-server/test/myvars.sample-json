@@ -12,7 +12,7 @@
     "distribution": "debian",
     "ssh_pty": "true",
 
-    "role": "ansible"
+    "role": "ansible",
 
     "ansible_repo": "<Your Ansible GIT repo>"
 }
