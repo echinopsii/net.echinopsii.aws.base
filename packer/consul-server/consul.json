@@ -26,7 +26,7 @@
         "instance_type": "{{ user `aws_instance_type` }}",
 
         "source_ami": "{{ user `aws_source_ami` }}",
-	    "ami_users": "{{ user `aws_shared_account` }}",
+        "ami_users": "{{ user `aws_shared_account` }}",
 
         "ssh_username": "{{user `aws_distribution_user`}}",
         "ssh_pty": "{{user `ssh_pty` }}",
