@@ -25,7 +25,7 @@
         "instance_type": "{{ user `aws_instance_type` }}",
 
         "source_ami": "{{ user `aws_source_ami` }}",
-	    "ami_users": "{{ user `aws_shared_account` }}",
+        "ami_users": "{{ user `aws_shared_account` }}",
 
         "ssh_username": "{{user `aws_distribution_user`}}",
         "ssh_pty": "{{user `ssh_pty` }}",
@@ -51,6 +51,7 @@
             "type": "shell",
             "scripts": [
                 "{{template_dir}}/scripts/install_docker_{{ user `distribution` }}.sh",
+                "{{template_dir}}/scripts/install_ansible_user_{{ user `distribution`}}.sh",
                 "{{template_dir}}/scripts/clean_{{ user `distribution` }}.sh"
             ],
             "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
