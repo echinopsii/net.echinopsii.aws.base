@@ -12,7 +12,7 @@ rm /etc/ssh/ssh_host*
 echo "Remove local configurations by cloudinit"
 rm /etc/default/locale
 rm /etc/hostname
-rm /etc/sudoers.d/90-cloud-init-users
+#rm /etc/sudoers.d/90-cloud-init-users
 rm /etc/apt/apt.conf.d/90cloud-init-pipelining
 rm -rf /var/lib/cloud/instances/*
 rm -rf /var/lib/cloud/data/*

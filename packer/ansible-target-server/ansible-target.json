@@ -54,7 +54,10 @@
                 "{{template_dir}}/scripts/install_ansible_user_{{ user `distribution`}}.sh",
                 "{{template_dir}}/scripts/clean_{{ user `distribution` }}.sh"
             ],
-            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
+            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "environment_vars": [
+                "ANSIBLE_AUTHORIZED_KEYS={{ user `ansible_authorized_keys`}}"
+            ]
         }
     ]
 }

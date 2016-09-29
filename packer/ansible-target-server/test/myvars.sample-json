@@ -9,6 +9,7 @@
     "aws_source_ami": "ami-e079f893",
     "aws_shared_account": "",
 
+    "ansible_authorized_keys": "<Your SSH pub key>",
     "distribution": "debian",
     "ssh_pty": "true",
 
