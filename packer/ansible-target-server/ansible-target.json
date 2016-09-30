@@ -33,8 +33,7 @@
         "ami_name": "{{ user `role` }}-{{ user `distribution` }}-{{ timestamp }}",
         "tags": {
             "Name": "{{user `role`}}",
-            "SourceAmi": "{{user `aws_source_ami`}}",
-            "ConsulVersion": "{{user `consul_version`}}"
+            "SourceAmi": "{{user `aws_source_ami`}}"
         },
         "run_tags": {
             "Name": "Packer Builder {{user `role`}}-{{ user `distribution` }}"
