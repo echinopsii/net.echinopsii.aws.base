@@ -33,8 +33,7 @@
         "ami_name": "{{ user `role` }}-{{ user `distribution` }}-{{ timestamp }}",
         "tags": {
             "Name": "{{user `role`}}",
-            "SourceAmi": "{{user `aws_source_ami`}}",
-            "ConsulVersion": "{{user `consul_version`}}"
+            "SourceAmi": "{{user `aws_source_ami`}}"
         },
         "run_tags": {
             "Name": "Packer Builder {{user `role`}}-{{ user `distribution` }}"
@@ -48,10 +47,24 @@
                 "{{template_dir}}/scripts/install_ansible_{{ user `distribution` }}.sh",
                 "{{template_dir}}/scripts/clean_{{ user `distribution` }}.sh"
             ],
-            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
+        },
+        {
+            "type": "file",
+            "source": "files",
+            "destination": "/tmp/"
+        },
+	{
+	    "type": "shell",
+            "scripts": [
+                "{{template_dir}}/scripts/configure_user_ansible_conf.sh"
+            ],
+            "execute_command": "{{ .Vars }} sh '{{ .Path }}'",
             "environment_vars": [
-                "ANSIBLE_REPO={{ user `ansible_repo`}}"
+                "ANSIBLE_REPO={{ user `ansible_repo`}}",
+                "ANSIBLE_SAK={{ user `ansible_sak`}}",
+                "ANSIBLE_AKI={{ user `ansible_aki`}}"
             ]
-        }
+	}
     ]
 }
