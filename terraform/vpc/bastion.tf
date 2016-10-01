@@ -86,11 +86,19 @@ data "aws_ami" "bastion" {
   }
 }
 
-data "template_file" "user_data" {
+data "template_file" "hostname" {
   template = "${file("${path.module}/files/hostname.tpl.sh")}"
 
   vars {
     hostname = "{name}"
+  }
+}
+
+data "template_file" "setup_ansible" {
+  template = "${file("${path.module}/files/setup_bastion_ansible.sh")}"
+
+  vars {
+    TF_VPC_ID = "{vpc_id}"
   }
 }
 
@@ -107,7 +115,7 @@ resource "aws_instance" "bastion" {
   key_name               = "${var.bastion_key}"
   subnet_id              = "${element(aws_subnet.public.*.id,count.index)}"
   vpc_security_group_ids = ["${aws_security_group.remotessh.id}","${aws_security_group.admin.id}" ]
-  user_data              = "${replace(data.template_file.user_data.rendered, "{name}", var.bastions_name[count.index])}" 
+  user_data              = "${replace(data.template_file.hostname.rendered, "{name}", var.bastions_name[count.index])}\n${replace(data.template_file.setup_ansible.rendered, "{vpc_id}", aws_vpc.main.id) }" 
   tags {
     Name = "${var.bastions_name[count.index]}"
   }
