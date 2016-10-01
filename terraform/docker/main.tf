@@ -29,6 +29,10 @@ variable "docker_registry" { default="" }
 variable "docker_overlay" {}
 variable "docker_overlay_advertise" { default="eth0:2376"}
 
+variable "aws_instance_tags" {
+  type = "list"
+}
+
 provider "aws" {
   region = "${var.region}"
 }
@@ -132,7 +136,7 @@ data "aws_ami" "docker" {
 }
 
 resource "aws_instance" "docker" {
-    count = "${length(var.dockerhosts)}"
+    count = "${length(var.aws_instance_tags)}"
     ami = "${data.aws_ami.docker.id}"
     instance_type = "${var.dockerhost_type[count.index]}"
     key_name = "${var.docker_key}"
@@ -147,5 +151,5 @@ resource "aws_instance" "docker" {
 
     user_data="${replace(data.template_file.hostname.rendered,"{hostname}",var.dockerhosts[count.index])}\n${replace(data.template_file.setup_docker.rendered,"{hostname}",var.dockerhosts[count.index])}"
 
-    tags { Name = "${var.dockerhosts[count.index]}" }
+    tags="${var.aws_instance_tags[count.index]}"
 }
