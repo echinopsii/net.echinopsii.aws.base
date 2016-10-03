@@ -150,7 +150,7 @@ resource "aws_instance" "consul" {
   instance_type          = "${var.consul_type}"
   key_name               = "${var.consul_key}"
   subnet_id              = "${data.terraform_remote_state.vpc.private_subnets[count.index]}"
-  vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sshserver}", "${aws_security_group.consul.id}"]
+  vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${aws_security_group.consul.id}"]
   user_data              = "${replace(data.template_file.hostname.rendered,"{hostname}",var.consul_servers[count.index])}\n${data.template_file.consul_config.rendered}"
 
   tags {

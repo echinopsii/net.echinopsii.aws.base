@@ -5,7 +5,7 @@ resource "aws_instance" "agent" {
   instance_type          = "t2.nano"
   key_name               = "${var.consul_key}"
   subnet_id              = "${data.terraform_remote_state.vpc.private_subnets[0]}"
-  vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sshserver}", "${aws_security_group.consul.id}"]
+  vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${aws_security_group.consul.id}"]
   user_data              = "${data.template_file.agent_hostname.rendered}\n${data.template_file.agent_consul_config.rendered}"
 
   tags {

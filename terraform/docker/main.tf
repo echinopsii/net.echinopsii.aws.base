@@ -142,7 +142,7 @@ resource "aws_instance" "docker" {
     key_name = "${var.docker_key}"
     subnet_id = "${data.terraform_remote_state.vpc.private_subnets[count.index]}"
 
-    vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sshserver}", "${data.terraform_remote_state.consul.sg_consul_client}","${aws_security_group.docker_overlay.id}"]
+    vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${data.terraform_remote_state.consul.sg_consul_client}","${aws_security_group.docker_overlay.id}"]
     root_block_device {
         volume_type = "gp2"
         volume_size = "${var.dockerhost_root_disk_size}"

@@ -140,7 +140,7 @@ resource "aws_route53_record" "bastion_servers_reverse" {
 }
 
 
-output "sshserver" {
+output "sg_sshserver" {
   value = "${aws_security_group.sshserver.id}"
 }
 
