@@ -2,7 +2,7 @@
 set -e
 set -x
 
-echo "[defaults]\n\n#inventory = ~/.ansible.hosts\nhost_key_checking = False" > ~/.ansible.cfg
+echo "[defaults]\n\ninventory = ~/ansible.base/tools/ec2.py\nhost_key_checking = False" > ~/.ansible.cfg
 
 mkdir ~/.aws
 echo "[default]\nregion = eu-west-1" > ~/.aws/config
