@@ -2,7 +2,7 @@ variable "private_domain_name" {}
 variable "reverse_dns" {}
 
 resource "aws_route53_zone" "private" {
-  name   = "${var.private_domain_name}"
+  name   = "${var.vpc_short_name}.${var.private_domain_name}"
   vpc_id = "${aws_vpc.main.id}"
 }
 
@@ -13,7 +13,7 @@ resource "aws_route53_zone" "private_reverse" {
 
 resource "aws_vpc_dhcp_options" "dns_resolver" {
   domain_name_servers = ["${cidrhost(var.cidr_block, "2") }"]
-  domain_name         = "${var.private_domain_name}"
+  domain_name         = "${var.vpc_short_name}.${var.private_domain_name}"
 
   tags {
     Name = "${var.vpc_name}_DNS_CONFIG"

@@ -115,9 +115,9 @@ resource "aws_instance" "bastion" {
   key_name               = "${var.bastion_key}"
   subnet_id              = "${element(aws_subnet.public.*.id,count.index)}"
   vpc_security_group_ids = ["${aws_security_group.remotessh.id}","${aws_security_group.admin.id}" ]
-  user_data              = "${replace(data.template_file.hostname.rendered, "{name}", var.bastions_name[count.index])}\n${replace(data.template_file.setup_ansible.rendered, "{vpc_id}", aws_vpc.main.id) }" 
+  user_data              = "${replace(data.template_file.hostname.rendered, "{name}", "${var.bastions_name[count.index]}.${var.vpc_short_name}")}\n${replace(data.template_file.setup_ansible.rendered, "{vpc_id}", aws_vpc.main.id) }" 
   tags {
-    Name = "${var.bastions_name[count.index]}"
+    Name = "${var.vpc_short_name}.${var.bastions_name[count.index]}"
   }
 }
 
@@ -136,7 +136,7 @@ resource "aws_route53_record" "bastion_servers_reverse" {
   name    = "${replace(element(aws_instance.bastion.*.private_ip,count.index),"/([0-9]+).([0-9]+).([0-9]+).([0-9]+)/","$4.$3")}"
   type    = "PTR"
   ttl     = "${var.bastion_ttl}"
-  records = ["${var.bastions_name[count.index]}.${var.private_domain_name}"]
+  records = ["${var.bastions_name[count.index]}.${var.vpc_short_name}.${var.private_domain_name}"]
 }
 
 

@@ -14,3 +14,6 @@ bastion_ami_basename  = ["<your bastion ami basename>", ...]
 bastion_ttl           = "300"
 
 bastions_name         = ["<your first bastion name>", ...]
+
+# NOTE 1 - your bastion hostname will be defined like this : bastions_name[i].vpc_short_name
+# NOTE 2 - your bastion tag Name will be defined like this : vpc_short_name.bastions_name[i]
