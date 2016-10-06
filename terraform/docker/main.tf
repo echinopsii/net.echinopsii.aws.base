@@ -12,6 +12,15 @@ variable "docker_overlay_iudp" {
   default = ["7946","4789"]
 }
 
+variable "docker_exapp_itcp" {
+  type = "list"
+  default = []
+}
+variable "docker_exapp_iudp" {
+  type = "list"
+  default = []
+}
+
 variable "docker_key" {}
 variable "dockerhosts" {
   type = "list"
@@ -28,6 +37,8 @@ variable "dockerhost_ttl" { default=300 }
 variable "docker_registry" { default="" }
 variable "docker_overlay" {}
 variable "docker_overlay_advertise" { default="eth0:2376"}
+
+variable "docker_exapp" {}
 
 variable "aws_instance_tags" {
   type = "list"
@@ -55,10 +66,42 @@ data "terraform_remote_state" "consul" {
     }
 }
 
+resource "aws_security_group" "docker_exapp" {
+  name = "${data.terraform_remote_state.vpc.vpc_short_name}-${var.docker_exapp}"
+  description = "Docker Exposed Applications"
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  tags {
+    Name = "${data.terraform_remote_state.vpc.vpc_name} Docker Exposed Applications"
+  }
+}
+
+resource "aws_security_group_rule" "docker_exapp_itcp" {
+    count = "${length(var.docker_exapp_itcp)}"
+    type = "ingress"
+    from_port = "${var.docker_exapp_itcp[count.index]}"
+    to_port = "${var.docker_exapp_itcp[count.index]}"
+    protocol = "tcp"
+    security_group_id = "${aws_security_group.docker_exapp.id}"
+    source_security_group_id = "${data.terraform_remote_state.vpc.sg_admin}"
+}
+
+resource "aws_security_group_rule" "docker_exapp_iudp" {
+    count = "${length(var.docker_exapp_iudp)}"
+    type = "ingress"
+    from_port = "${var.docker_exapp_iudp[count.index]}"
+    to_port = "${var.docker_exapp_iudp[count.index]}"
+    protocol = "udp"
+    security_group_id = "${aws_security_group.docker_overlay.id}"
+    source_security_group_id = "${data.terraform_remote_state.vpc.sg_admin}"
+}
+
 resource "aws_security_group" "docker_overlay" {
-     name = "${var.docker_overlay}"
+     name = "${data.terraform_remote_state.vpc.vpc_short_name}-${var.docker_overlay}"
      description = "Docker Overlay"
      vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+     tags {
+          Name = "${data.terraform_remote_state.vpc.vpc_name} Docker Overlay"
+     }
 }
 
 resource "aws_security_group_rule" "docker_overlay_itcp" {
@@ -142,14 +185,14 @@ resource "aws_instance" "docker" {
     key_name = "${var.docker_key}"
     subnet_id = "${data.terraform_remote_state.vpc.private_subnets[count.index]}"
 
-    vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${data.terraform_remote_state.consul.sg_consul_client}","${aws_security_group.docker_overlay.id}"]
+    vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${data.terraform_remote_state.consul.sg_consul_client}","${aws_security_group.docker_overlay.id}","${aws_security_group.docker_exapp.id}"]
     root_block_device {
         volume_type = "gp2"
         volume_size = "${var.dockerhost_root_disk_size}"
         delete_on_termination = "true"
     }
 
-    user_data="${replace(data.template_file.hostname.rendered,"{hostname}",var.dockerhosts[count.index])}\n${replace(data.template_file.setup_docker.rendered,"{hostname}",var.dockerhosts[count.index])}"
+    user_data="${replace(data.template_file.hostname.rendered,"{hostname}","${var.dockerhosts[count.index]}.${data.terraform_remote_state.vpc.vpc_short_name}")}\n${replace(data.template_file.setup_docker.rendered,"{hostname}",var.dockerhosts[count.index])}"
 
     tags="${var.aws_instance_tags[count.index]}"
 }

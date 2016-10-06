@@ -11,9 +11,13 @@ dockerhost_root_disk_size = "10"
 
 docker_overlay = "<your docker overlay sg name>" 
 
+docker_exapp   = "<your docker exposed apps sg name>"
+docker_exapp_itcp    = ["<exposed app tcp port to admin sg>", ...]
+docker_exapp_iudp    = ["<exposed app udp port to admin sg>", ...]
+
 aws_instance_tags = [ # your aws instance tags
   {
-    Name = "<",
+    Name = "<ec2 instance tag name>",
     ...
   },
   ...
