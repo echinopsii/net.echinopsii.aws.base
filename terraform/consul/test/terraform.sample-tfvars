@@ -5,7 +5,7 @@ region                = "<your aws region>"
 consul_key            = "<your consul key>"
 consul_ami_basename   = "<your consul ami basename"
 consul_version        = "0.6.4"
-consul_servers        = ["<your consul server 1 name>", ...]
-consul_agent          = "<your consul agent server name>"
+consul_servers_name   = ["<your consul server 1 name>", ...]
+consul_agent_name     = "<your consul agent server name>"
 
 ttl                   = "300"

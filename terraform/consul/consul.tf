@@ -4,7 +4,7 @@ variable "vpc_state_key" {}
 
 variable "region" {}
 
-variable "consul_servers" {
+variable "consul_servers_name" {
   type = "list"
   default = ["consul0","consul1","consul2"]
 }
@@ -145,16 +145,16 @@ resource "aws_security_group_rule" "consul_admin" {
 
 
 resource "aws_instance" "consul" {
-  count                  = "${length(var.consul_servers)}"
+  count                  = "${length(var.consul_servers_name)}"
   ami                    = "${data.aws_ami.consul.id}"
   instance_type          = "${var.consul_type}"
   key_name               = "${var.consul_key}"
   subnet_id              = "${data.terraform_remote_state.vpc.private_subnets[count.index]}"
   vpc_security_group_ids = ["${data.terraform_remote_state.vpc.sg_sshserver}", "${aws_security_group.consul.id}"]
-  user_data              = "${replace(data.template_file.hostname.rendered,"{hostname}",var.consul_servers[count.index])}\n${data.template_file.consul_config.rendered}"
+  user_data              = "${replace(data.template_file.hostname.rendered,"{hostname}","${var.consul_servers_name[count.index]}.${data.terraform_remote_state.vpc.vpc_short_name}")}\n${data.template_file.consul_config.rendered}"
 
   tags {
-    Name = "${var.consul_servers[count.index]}"
+    Name = "${data.terraform_remote_state.vpc.vpc_short_name}.${var.consul_servers_name[count.index]}"
   }
 }
 
@@ -162,7 +162,7 @@ data "template_file" "hostname" {
   template = "${file("${path.module}/files/hostname.tpl.sh")}"
 
   vars {
-    #TF_HOSTNAME = "${element(split(",",var.consul_servers),count.index)}"
+    #TF_HOSTNAME = "${element(split(",",var.consul_servers_name),count.index)}"
     TF_HOSTNAME = "{hostname}"
   }
 }
@@ -171,7 +171,7 @@ data "template_file" "consul_config" {
   template = "${file("${path.module}/files/config_consul.tpl.sh")}"
 
   vars {
-    TF_CONSUL_SERVERS = "${join(",",var.consul_servers)}"
+    TF_CONSUL_SERVERS = "${join(",",var.consul_servers_name)}"
     TF_CONSUL_ROLE    = "server"
     TF_CONSUL_OPTIONS = ""
     TF_CONSUL_PUBLIC = "yes"
@@ -179,21 +179,21 @@ data "template_file" "consul_config" {
 }
 
 resource "aws_route53_record" "consul_servers" {
-  count   = "${length(var.consul_servers)}"
+  count   = "${length(var.consul_servers_name)}"
   zone_id = "${data.terraform_remote_state.vpc.private_host_zone}"
-  name    = "${var.consul_servers[count.index]}"
+  name    = "${var.consul_servers_name[count.index]}"
   type    = "A"
   ttl     = "${var.ttl}"
   records = ["${aws_instance.consul.*.private_ip[count.index]}"]
 }
 
 resource "aws_route53_record" "consul_servers_reverse" {
-  count   = "${length(var.consul_servers)}"
+  count   = "${length(var.consul_servers_name)}"
   zone_id = "${data.terraform_remote_state.vpc.private_host_zone_reverse}"
   name    = "${replace(element(aws_instance.consul.*.private_ip,count.index),"/([0-9]+).([0-9]+).([0-9]+).([0-9]+)/","$4.$3")}"
   type    = "PTR"
   ttl     = "${var.ttl}"
-  records = ["${var.consul_servers[count.index]}.${data.terraform_remote_state.vpc.private_domain_name}"]
+  records = ["${var.consul_servers_name[count.index]}.${data.terraform_remote_state.vpc.private_domain_name}"]
 }
 
 output "consul_server_ips" {
