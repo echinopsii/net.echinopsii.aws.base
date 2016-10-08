@@ -193,7 +193,7 @@ resource "aws_route53_record" "consul_servers_reverse" {
   name    = "${replace(element(aws_instance.consul.*.private_ip,count.index),"/([0-9]+).([0-9]+).([0-9]+).([0-9]+)/","$4.$3")}"
   type    = "PTR"
   ttl     = "${var.ttl}"
-  records = ["${var.consul_servers_name[count.index]}.${data.terraform_remote_state.vpc.private_domain_name}"]
+  records = ["${var.consul_servers_name[count.index]}.${data.terraform_remote_state.vpc.vpc_short_name}.${data.terraform_remote_state.vpc.private_domain_name}"]
 }
 
 output "consul_server_ips" {

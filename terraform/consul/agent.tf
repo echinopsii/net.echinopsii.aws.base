@@ -45,6 +45,6 @@ resource "aws_route53_record" "consul_agent_reverse" {
   name    = "${replace(aws_instance.agent.private_ip,"/([0-9]+).([0-9]+).([0-9]+).([0-9]+)/","$4.$3")}"
   type    = "PTR"
   ttl     = "${var.ttl}"
-  records = ["${var.consul_agent_name}.${data.terraform_remote_state.vpc.private_domain_name}"]
+  records = ["${var.consul_agent_name}.${data.terraform_remote_state.vpc.vpc_short_name}.${data.terraform_remote_state.vpc.private_domain_name}"]
 }
 
