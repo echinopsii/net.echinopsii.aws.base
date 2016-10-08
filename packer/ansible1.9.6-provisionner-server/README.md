@@ -9,6 +9,6 @@ vim test/myvars.json
 1. Launch packer
 
 ```
-packer build -var-file test/myvars.json ansible.json
+packer build -var-file test/myvars.json ansible1.9.6-provisionner.json
 ```
 
