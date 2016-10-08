@@ -148,7 +148,7 @@ resource "aws_route53_record" "docker_servers_reverse" {
   name    = "${replace(element(aws_instance.docker.*.private_ip,count.index),"/([0-9]+).([0-9]+).([0-9]+).([0-9]+)/","$4.$3")}"
   type    = "PTR"
   ttl     = "${var.dockerhost_ttl}"
-  records = ["${var.dockerhosts[count.index]}.${data.terraform_remote_state.vpc.private_domain_name}"]
+  records = ["${var.dockerhosts[count.index]}.${data.terraform_remote_state.vpc.vpc_short_name}.${data.terraform_remote_state.vpc.private_domain_name}"]
 }
 
 data "template_file" "hostname" {
