@@ -101,3 +101,11 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   instance_class     = "${var.cluster_instances_type[count.index]}"
   db_subnet_group_name = "${aws_db_subnet_group.default.name}"
 }
+
+output "sg_rds_client" {
+  value = "${aws_security_group.rds_client.id}"
+}
+
+output "ep_rds" {
+  value = "${aws_rds_cluster.default.endpoint}"
+}
