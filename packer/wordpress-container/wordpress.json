@@ -1,0 +1,20 @@
+{
+    "variables": {
+        "distribution": "debian"
+    },
+    "builders": [{
+        "type": "docker",
+        "image": "php:7.0-apache",
+        "commit": true
+    }],
+    "provisioners": [
+        {
+            "type": "shell",
+            "scripts": [
+                "{{template_dir}}/scripts/install_wordpress_{{ user `distribution` }}.sh",
+                "{{template_dir}}/scripts/clean_{{ user `distribution` }}.sh"
+            ],
+            "execute_command": "{{ .Vars }} sh '{{ .Path }}'"
+        }
+    ]
+}
