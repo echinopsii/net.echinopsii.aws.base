@@ -39,6 +39,44 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
+resource "aws_security_group" "rds_client" {
+  name        = "${data.terraform_remote_state.vpc.vpc_short_name}-rdsclient"
+  description = "RDS Client"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+
+  tags {
+    Name = "${data.terraform_remote_state.vpc.vpc_name} RDS Client"
+  }
+}
+
+resource "aws_security_group" "rds_access" {
+  name        = "${data.terraform_remote_state.vpc.vpc_short_name}-rdsaccess"
+  description = "Accessing RDS"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+
+  tags {
+    Name = "${data.terraform_remote_state.vpc.vpc_name} RDS Access"
+  }
+}
+
+resource "aws_security_group_rule" "rds_admin_access_tcp" {
+  type                     = "ingress"
+  from_port                = "3306"
+  to_port                  = "3306"
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.rds_access.id}"
+  source_security_group_id = "${data.terraform_remote_state.vpc.sg_admin}"
+}
+
+resource "aws_security_group_rule" "rds_client_access_tcp" {
+  type                     = "ingress"
+  from_port                = "3306"
+  to_port                  = "3306"
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.rds_access.id}"
+  source_security_group_id = "${aws_security_group.rds_client.id}"
+}
+
 resource "aws_db_subnet_group" "default" {
     name = "${data.terraform_remote_state.vpc.vpc_short_name}-subnets-group"
     subnet_ids = ["${data.terraform_remote_state.vpc.private_subnets}"]
@@ -53,6 +91,7 @@ resource "aws_rds_cluster" "default" {
   backup_retention_period = "${var.cluster_brp}"
   preferred_backup_window = "${var.cluster_pbw}"
   db_subnet_group_name = "${aws_db_subnet_group.default.name}"
+  vpc_security_group_ids = ["${aws_security_group.rds_access.id}"]
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
