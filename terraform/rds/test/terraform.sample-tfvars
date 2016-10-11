@@ -1,0 +1,14 @@
+state_bucket           = "<your s3 state bucket>"
+vpc_state_key          = "<your vpc state key>"
+region                 = "<your aws region>"
+
+cluster_id             = "<your rds aurora cluster id - default aurora-cluster-demo>"
+cluster_db_name        = "<your rds aurora db name - default mydb>"
+cluster_master_user    = "<your rds aurora master user - default user>"
+cluster_master_pwd     = "<your rds aurora master password - default my_secret!>"
+cluster_brp            = "<your rds aurora backup retention period - default 5>"
+cluster_pbw            = "<your rds aurora preferred backup window - default 07:00-09:00>"
+
+cluster_instances_name = ["your first aurora instance name", ...]
+cluster_instances_type = ["your first aurora instance type", ...]
+
