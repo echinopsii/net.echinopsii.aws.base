@@ -1,4 +1,4 @@
-state_bucket          = "<your s2 state bucket>"
+state_bucket          = "<your s3 state bucket>"
 vpc_state_key         = "<your vpc state key>"
 region                = "<your aws region>"
 
