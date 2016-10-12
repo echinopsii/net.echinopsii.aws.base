@@ -2,6 +2,8 @@
 set -e
 set -x
 
+mv /tmp/files/start.sh /
+
 DEP="libpng12-dev libjpeg-dev"
 export DEBIAN_FRONTEND=noninteractive
 
@@ -33,4 +35,4 @@ curl -o wordpress.tar.gz -fSL "https://wordpress.org/wordpress-${WORDPRESS_VERSI
   && rm wordpress.tar.gz \
   && chown -R www-data:www-data /usr/src/wordpress
 
-
+mv /tmp/files/usr/src/wordpress/* /usr/src/wordpress

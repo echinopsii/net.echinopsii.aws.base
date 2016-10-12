@@ -9,6 +9,11 @@
     }],
     "provisioners": [
         {
+            "type": "file",
+            "source": "files",
+            "destination": "/tmp"
+        },
+        {
             "type": "shell",
             "scripts": [
                 "{{template_dir}}/scripts/install_wordpress_{{ user `distribution` }}.sh",
@@ -16,5 +21,14 @@
             ],
             "execute_command": "{{ .Vars }} sh '{{ .Path }}'"
         }
+    ],
+    "post-processors": [
+	[
+	    {
+                "type": "docker-tag",
+                "repository": "echinopsii/wordpress",
+                "tag": "4.6.1"
+            }
+	]
     ]
 }
