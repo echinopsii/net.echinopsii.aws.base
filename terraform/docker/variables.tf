@@ -1,7 +1,7 @@
 variable "ami_basenames" {
     type = "map"
     default = {
-        "ansible-target" = "ansible-target-debian*"
+        "ansible-target" = "docker-ansible-target-debian*"
         "debian-8.4" = "debian-jessie-amd64-hvm*"
         "ubuntu-16.04:eu-west-1" = "ubuntu/images-milestone/hvm-ssd/ubuntu-xenial-16.04*"
     }
