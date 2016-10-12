@@ -16,10 +16,8 @@ variable ecs_cluster_asg_dc {
   default="3"
 }
 
-variable ecs_instance_ami {
-  default = {
-    "eu-west-1" = "ami-175f1964"
-  }    
+variable ecs_instance_distrib {
+  default="ecs-ansible-target*"
 }
 variable ecs_instance_type {
   default="t2.micro"
@@ -92,14 +90,21 @@ resource "aws_security_group_rule" "ecs_admin_access_e" {
   security_group_id = "${aws_security_group.ecs_access.id}"
 }
 
+data "aws_ami" "ecs-ansible-target" {
+  most_recent = true
+  filter { 
+    name = "name"
+    values = ["${var.ecs_instance_distrib}"]
+  }
+}
+
 resource "aws_launch_configuration" "ecs_instance_conf" {
   name = "${data.terraform_remote_state.vpc.vpc_short_name}-${var.ecs_cluster_name}"
-  image_id = "${lookup(var.ecs_instance_ami, var.region)}"
+  image_id = "${data.aws_ami.ecs-ansible-target.id}"
   instance_type = "${var.ecs_instance_type}"
   security_groups = ["${aws_security_group.ecs_access.id}","${data.terraform_remote_state.rds.sg_rds_client}"]
   iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile.name}"
   key_name = "${var.ecs_instance_key}"
-#  associate_public_ip_address = true
   user_data = "#!/bin/bash\necho ECS_CLUSTER='${var.ecs_cluster_name}' > /etc/ecs/ecs.config"
 }
 
@@ -123,8 +128,13 @@ resource "aws_autoscaling_group" "ecs_cluster_asg" {
     propagate_at_launch = true
   }
   tag {
-    key = "ansible_host-var_rdsClusterEndpoint"
+    key = "ansible_host-var_mysqlFQDN"
     value = "${data.terraform_remote_state.rds.ep_rds}"
+    propagate_at_launch = true
+  }
+  tag {
+    key = "ansible_host-var_wwwPath"
+    value = "/ecs/${var.ecs_service_ins_task_name}"
     propagate_at_launch = true
   }
 }
