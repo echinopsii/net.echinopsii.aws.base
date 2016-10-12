@@ -1,6 +1,9 @@
-#variable ecs_service_elb_port {
-#  default="80"
-#}
+variable ecs_service_elb_port {
+  default="80"
+}
+variable ecs_service_elb_proto {
+  default="tcp"
+}
 variable ecs_service_ins_port {
   default="80"
 }
@@ -10,12 +13,12 @@ variable ecs_service_ins_trproto {
 variable ecs_service_ins_appproto {
   default="tcp"
 }
-#variable ecs_service_ins_name {
-#  default="httpd"
-#}
-#variable ecs_service_ins_ptt {
-#  default="index.html"
-#}
+variable ecs_service_ins_name {
+  default="httpd"
+}
+variable ecs_service_ins_ptt {
+  default="index.html"
+}
 variable ecs_service_ins_task_name {
   default="httpd"
 }
@@ -78,7 +81,7 @@ variable ecs_service_ins_task_file {
 #  subnets = ["${data.terraform_remote_state.vpc.private_subnets}"]
 #
 #  listener {
-#    lb_protocol = "http"
+#    lb_protocol = "${var.ecs_service_elb_proto}"
 #    lb_port = "${var.ecs_service_elb_port}"
 #    instance_protocol = "${var.ecs_service_ins_appproto}"
 #    instance_port = "${var.ecs_service_ins_port}"
@@ -123,11 +126,11 @@ resource "aws_ecs_service" "some_service" {
   # seems to be some issues when container are managed with ecs agent with elb
   # on new aws ecs amis : https://github.com/aws/amazon-ecs-agent/issues/515
   # TODO: investigate
-  # iam_role = "${aws_iam_role.ecs_service_role.arn}"
-  # depends_on = ["aws_iam_role_policy.ecs_service_role_policy"]
-  # load_balancer {
-  #   elb_name = "${aws_elb.ecs_service_elb.name}"
-  #   container_name = "${var.ecs_service_ins_name}"
-  #   container_port = "${var.ecs_service_ins_port}"
-  # }
+  #iam_role = "${aws_iam_role.ecs_service_role.arn}"
+  #depends_on = ["aws_iam_role_policy.ecs_service_role_policy"]
+  #load_balancer {
+  #  elb_name = "${aws_elb.ecs_service_elb.name}"
+  #  container_name = "${var.ecs_service_ins_name}"
+  #  container_port = "${var.ecs_service_ins_port}"
+  #}
 }

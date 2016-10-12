@@ -142,3 +142,7 @@ resource "aws_autoscaling_group" "ecs_cluster_asg" {
 resource "aws_ecs_cluster" "main" {
   name = "${var.ecs_cluster_name}"
 }
+
+output "sg_ecs_access" {
+  value = "${aws_security_group.ecs_access.id}"
+}
