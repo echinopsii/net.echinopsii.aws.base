@@ -58,8 +58,8 @@ resource "aws_security_group_rule" "ecs_elb_public_access_itcp" {
 
 resource "aws_security_group_rule" "ecs_elb_public_access_etcp" {
   type             = "egress"
-  from_port        = "80"
-  to_port          = "80"
+  from_port         = "${var.ecs_service_elb_port}"
+  to_port           = "${var.ecs_service_elb_port}"
   protocol         = "tcp"
   security_group_id = "${aws_security_group.ecs_elb_pubaccess.id}"
   cidr_blocks       = ["0.0.0.0/0"]
@@ -91,7 +91,8 @@ resource "aws_elb" "ecs_service_elb" {
     healthy_threshold = 3
     unhealthy_threshold = 2
     timeout = 3
-    target = "HTTP:${var.ecs_service_ins_port}/${var.ecs_service_ins_ptt}"
+    # target = "HTTP:${var.ecs_service_ins_port}/${var.ecs_service_ins_ptt}"
+    target = "TCP:${var.ecs_service_ins_port}"
     interval = 5
   }
 
