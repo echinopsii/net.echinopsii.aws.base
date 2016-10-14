@@ -10,8 +10,6 @@ echo "Remove server ssh keys"
 rm /etc/ssh/ssh_host*
 
 echo "Remove local configurations by cloudinit"
-rm /etc/default/locale
-rm /etc/hostname
 rm /etc/sudoers.d/cloud-init
 rm -rf /var/lib/cloud/instances/*
 rm -rf /var/lib/cloud/data/*
