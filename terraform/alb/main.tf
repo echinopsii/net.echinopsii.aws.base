@@ -7,13 +7,13 @@ variable service_elb_port {
   default="80"
 }
 variable service_elb_proto {
-  default="http"
+  default="tcp"
 }
 variable service_ins_port {
   default="80"
 }
 variable service_ins_proto {
-  default="http"
+  default="tcp"
 }
 variable service_ins_ptt {
   default="index.html"
@@ -49,7 +49,7 @@ resource "aws_security_group" "elb_pubaccess" {
 
 resource "aws_security_group_rule" "elb_public_access_itcp" {
   type              = "ingress"
-  from_port         = "0"
+  from_port         = "${var.service_elb_port}"
   to_port           = "${var.service_elb_port}"
   protocol          = "tcp"
   security_group_id = "${aws_security_group.elb_pubaccess.id}"
@@ -58,8 +58,8 @@ resource "aws_security_group_rule" "elb_public_access_itcp" {
 
 resource "aws_security_group_rule" "elb_public_access_etcp" {
   type             = "egress"
-  from_port        = "0"
-  to_port          = "0"
+  from_port        = "${var.service_elb_port}"
+  to_port          = "${var.service_elb_port}"
   protocol         = "tcp"
   security_group_id = "${aws_security_group.elb_pubaccess.id}"
   cidr_blocks       = ["0.0.0.0/0"]
@@ -67,8 +67,8 @@ resource "aws_security_group_rule" "elb_public_access_etcp" {
 
 resource "aws_security_group_rule" "elb_ecs_access_itcp" {
   type                     = "ingress"
-  from_port                = "0"
-  to_port                  = "0"
+  from_port                = "80"
+  to_port                  = "80"
   protocol                 = "tcp"
   security_group_id        = "${data.terraform_remote_state.ecs.sg_ecs_access}"
   source_security_group_id = "${aws_security_group.ecs_elb_pubaccess.id}"
@@ -91,7 +91,7 @@ resource "aws_elb" "ecs_service_elb" {
     healthy_threshold = 3 
     unhealthy_threshold = 2
     timeout = 3
-    target = "HTTP:${var.service_ins_port}/${var.service_ins_ptt}"
+    target = "TCP:${var.service_ins_port}"
     interval = 5
   }
   
