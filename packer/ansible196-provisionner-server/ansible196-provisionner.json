@@ -62,6 +62,7 @@
             "execute_command": "{{ .Vars }} sh '{{ .Path }}'",
             "environment_vars": [
                 "ANSIBLE_REPO={{ user `ansible_repo`}}",
+                "ANSIBLE_TAG={{ user `ansible_tag` }}",
                 "ANSIBLE_SAK={{ user `ansible_sak`}}",
                 "ANSIBLE_AKI={{ user `ansible_aki`}}"
             ]

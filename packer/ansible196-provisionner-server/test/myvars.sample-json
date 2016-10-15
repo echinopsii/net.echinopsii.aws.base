@@ -15,6 +15,7 @@
     "role": "ansible",
 
     "ansible_repo": "<Your Ansible GIT repo>",
+    "ansible_tag": "<Your Ansible GIT repo TAG - if any else leave empty string>",
     "ansible_sak": "<AWS secret access key from your ec2 ro user>",
     "ansible_aki": "<AWS access key id from your ec2 ro user>"
 }
