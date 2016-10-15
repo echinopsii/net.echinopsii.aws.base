@@ -77,7 +77,7 @@ resource "aws_security_group_rule" "elb_ecs_access_itcp" {
 resource "aws_elb" "ecs_service_elb" {
   name = "${data.terraform_remote_state.vpc.vpc_short_name}-ecs-elb"
   security_groups = ["${aws_security_group.ecs_elb_pubaccess.id}"]
-  subnets = ["${data.terraform_remote_state.vpc.private_subnets}"]
+  subnets = ["${data.terraform_remote_state.vpc.public_subnets}"]
   instances = ["${data.terraform_remote_state.ecs.ecs_instances_id}"]
 
   listener {
