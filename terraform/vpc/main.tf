@@ -127,7 +127,7 @@ output "azs" {
 }
 
 output "public_subnets" {
-  value = ["${aws_subnet.public.*.id}"]
+  value = ["${concat(aws_subnet.public.*.id, aws_subnet.public.*.id)}"]
 }
 
 output "public_subnets_cidr_block" {
@@ -135,7 +135,7 @@ output "public_subnets_cidr_block" {
 }
 
 output "private_subnets" {
-  value = ["${aws_subnet.private.*.id}"]
+  value = ["${concat(aws_subnet.private.*.id, aws_subnet.private.*.id)}"] 
 }
 
 output "private_subnets_cidr_block" {
