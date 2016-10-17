@@ -48,46 +48,62 @@ for snap in snaps_arr:
 "
 }
 
+function pbuild {
+        PACKER_STACK=$1
+        PACKER_VARS_FILE_NAME=$2
+	PACKER_ROOT=$DEMO_ROOT/packer_aws_$PACKER_STACK
+
+        cd $PACKER_ROOT
+        if [ $? -ne 0 ] ; then
+	        echo "Problem with $PACKER_STACK stack : unable to cd into $PACKER_ROOT"
+	        return -1
+        fi
+
+        echo "... build $PACKER_STACK ami ..."
+        packer build -var-file params/$PACKER_VARS_FILE_NAME $PACKER_STACK.json 1>$LOG_FILE_PATH 2>&1
+        if [ $? -ne 0 ]; then
+	        cat $LOG_FILE_PATH
+	        echo "Error while building $PACKER_STACK... Exit."
+	        exit -1
+	fi
+}
+
 function packer_build {
 	PACKER_STACK=$1
 	PACKER_VARS_FILE_NAME=$2
-	PACKER_ROOT=$DEMO_ROOT/packer_aws_$PACKER_STACK
+	FORCE=$3
 
 	ami_id=`aws_get_ami_id $PACKER_STACK`
 	if [ "x$ami_id" == "x" ]; then
-		cd $PACKER_ROOT
-		if [ $? -ne 0 ] ; then
-			echo "Problem with $PACKER_STACK stack : unable to cd into $PACKER_ROOT"
-			return -1
-		fi
-
-		echo "... build $PACKER_STACK ami ..."
-		packer build -var-file params/$PACKER_VARS_FILE_NAME $PACKER_STACK.json 1>$LOG_FILE_PATH 2>&1
-		if [ $? -ne 0 ]; then
-                	cat $LOG_FILE_PATH
-	                echo "Error while building $PACKER_STACK... Exit."
-        	        exit -1
-	        fi
+		pbuild $PACKER_STACK $PACKER_VARS_FILE_NAME
 	else
-		echo "... $PACKER_STACK ami exists already ..."
+		if [ "x$FORCE" == "x" ]; then
+			echo "... $PACKER_STACK ami exists already ..."
+		else
+			packer_clean $PACKER_STACK $FORCE
+			pbuild $PACKER_STACK $PACKER_VARS_FILE_NAME
+		fi
 	fi
 }
 
 function packer_clean {
 	PACKER_STACK=$1
+	FORCE=$2
 
-	ami_id=`aws_get_ami_id $PACKER_STACK`
-	snapshots_id=`aws_get_ami_snap_id $ami_name`
+	if [ "x$FORCE" != "x" ]; then
+		ami_id=`aws_get_ami_id $PACKER_STACK`
+		snapshots_id=`aws_get_ami_snap_id $ami_name`
 
-        if [ "x$ami_id" != "x" ]; then
-		echo "... deregister ami $PACKER_STACK (ami id: $ami_id) ..."
-                aws ec2 deregister-image --image-id $ami_id
-        fi
-	if [ "x$snapshots_id" != "x" ]; then
-		for snapshot_id in $snapshots_id; do
-			echo "... delete snapshot $PACKER_STACK (snapshot id: $snapshot_id) ..."
-			aws ec2 delete-snapshot --snapshot-id $snapshot_id
-		done
+	        if [ "x$ami_id" != "x" ]; then
+			echo "... deregister ami $PACKER_STACK (ami id: $ami_id) ..."
+                	aws ec2 deregister-image --image-id $ami_id
+	        fi
+		if [ "x$snapshots_id" != "x" ]; then
+			for snapshot_id in $snapshots_id; do
+				echo "... delete snapshot $PACKER_STACK (snapshot id: $snapshot_id) ..."
+				aws ec2 delete-snapshot --snapshot-id $snapshot_id
+			done
+		fi
 	fi
 }
 
