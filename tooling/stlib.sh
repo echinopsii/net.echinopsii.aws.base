@@ -53,7 +53,7 @@ function packer_build {
 	PACKER_VARS_FILE_NAME=$2
 	PACKER_ROOT=$DEMO_ROOT/packer_aws_$PACKER_STACK
 
-	ami_id=`aws_get_ami_id $ami_name`
+	ami_id=`aws_get_ami_id $PACKER_STACK`
 	if [ "x$ami_id" == "x" ]; then
 		cd $PACKER_ROOT
 		if [ $? -ne 0 ] ; then
@@ -63,24 +63,29 @@ function packer_build {
 
 		echo "... build $PACKER_STACK ami ..."
 		packer build -var-file params/$PACKER_VARS_FILE_NAME $PACKER_STACK.json 1>$LOG_FILE_PATH 2>&1
+		if [ $? -ne 0 ]; then
+                	cat $LOG_FILE_PATH
+	                echo "Error while building $PACKER_STACK... Exit."
+        	        exit -1
+	        fi
 	else
 		echo "... $PACKER_STACK ami exists already ..."
 	fi
 }
 
 function packer_clean {
-	ami_name=$1
+	PACKER_STACK=$1
 
-	ami_id=`aws_get_ami_id $ami_name`
+	ami_id=`aws_get_ami_id $PACKER_STACK`
 	snapshots_id=`aws_get_ami_snap_id $ami_name`
 
         if [ "x$ami_id" != "x" ]; then
-		echo "... deregister ami $ami_name (ami id: $ami_id) ..."
+		echo "... deregister ami $PACKER_STACK (ami id: $ami_id) ..."
                 aws ec2 deregister-image --image-id $ami_id
         fi
 	if [ "x$snapshots_id" != "x" ]; then
 		for snapshot_id in $snapshots_id; do
-			echo "... delete snapshot $ami_name (snapshot id: $snapshot_id) ..."
+			echo "... delete snapshot $PACKER_STACK (snapshot id: $snapshot_id) ..."
 			aws ec2 delete-snapshot --snapshot-id $snapshot_id
 		done
 	fi
