@@ -12,6 +12,13 @@ if [ -z $BASTION_HOSTNAME ]; then
 	exit -1;
 fi
 
+if [ -z $PWD ]; then
+        echo "BASTION_HOSTNAME var is not defined."
+        echo "Define this var before including this lib."
+	cd -
+        exit -1;
+fi
+
 if [ -z $DEMO_ROOT ]; then
 	echo "DEMO_ROOT var is not defined."
 	echo "Define this var before including this lib."
@@ -57,7 +64,7 @@ function pbuild {
         cd $PACKER_ROOT
         if [ $? -ne 0 ] ; then
 	        echo "Problem with $PACKER_STACK stack : unable to cd into $PACKER_ROOT"
-		cd -
+		cd $PWD
 	        exit -1
         fi
 
@@ -66,7 +73,7 @@ function pbuild {
         if [ $? -ne 0 ]; then
 	        cat $LOG_FILE_PATH
 	        echo "Error while building $PACKER_STACK... Exit."
-		cd -
+		cd $PWD
 	        exit -1
 	fi
 }
@@ -154,7 +161,7 @@ function terraform_provision {
 	cd $TERRAFORM_ROOT
 	if [ $? -ne 0 ]; then
 		echo "Problem with $TERRAFORM_STACK stack : unable to cd into $TERRAFORM_ROOT"
-		cd -
+		cd $PWD
 		exit -1
 	fi
 
@@ -163,7 +170,7 @@ function terraform_provision {
         if [ $? -ne 0 ]; then
                 cat $LOG_FILE_PATH
                 echo "Error while planning $TERRAFORM_STACK... Exit."
-		cd -
+		cd $PWD
                 exit -1
         fi
 
@@ -175,7 +182,7 @@ function terraform_provision {
  		if [ $? -ne 0 ]; then
  	                cat $LOG_FILE_PATH
          	        echo "Error while applying $TERRAFORM_STACK... Exit."
-			cd -
+			cd $PWD
                  	exit -1
  		fi
         fi
@@ -188,7 +195,7 @@ function terraform_destroy {
         cd $TERRAFORM_ROOT
         if [ $? -ne 0 ]; then
                 echo "Problem with $TERRAFORM_STACK stack : unable to cd into $TERRAFORM_ROOT"
-		cd -
+		cd $PWD
                 exit -1
         fi
 
@@ -197,7 +204,7 @@ function terraform_destroy {
         if [ $? -ne 0 ]; then
                 cat $LOG_FILE_PATH
                 echo "Error while destroying $TERRAFORM_STACK... Exit."
-		cd -
+		cd $PWD
                 exit -1
         fi
 }
