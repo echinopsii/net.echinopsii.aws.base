@@ -141,7 +141,7 @@ function ssh_tunnel_service_up {
         SERVICE_NAME=$2
         SERVICE_PORT=$3
         ssh -o StrictHostKeyChecking=no -f -N -q -L $SERVICE_PORT:$SERVICE_HOST:$SERVICE_PORT $BASTION_HOSTNAME
-        echo "... you can reach $SERVICE_NAME UI via http://localhost:$SERVICE_PORT ..."
+        echo "... you can reach $SERVICE_NAME UI via localhost:$SERVICE_PORT ..."
 }
 
 function terraform_provision {
