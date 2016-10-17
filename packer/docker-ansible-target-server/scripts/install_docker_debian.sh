@@ -17,8 +17,8 @@ apt-get install -y ${_BDEP}
 
 gpasswd -a admin docker
 
-pip install 'docker-py==1.9.0' --force-reinstall
 pip install docker-compose
+pip install 'docker-py==1.9.0' --force-reinstall
 
 mv /tmp/dockerConnect /usr/bin/
 mv /tmp/dockerKlean /usr/bin/
