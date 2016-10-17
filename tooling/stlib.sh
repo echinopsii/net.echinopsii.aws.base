@@ -102,7 +102,7 @@ function packer_clean {
 
 	if [ "x$FORCE" != "x" ]; then
 		ami_id=`aws_get_ami_id $PACKER_STACK`
-		snapshots_id=`aws_get_ami_snap_id $ami_name`
+		snapshots_id=`aws_get_ami_snap_id $PACKER_STACK`
 
 	        if [ "x$ami_id" != "x" ]; then
 			echo "... deregister ami $PACKER_STACK (ami id: $ami_id) ..."
